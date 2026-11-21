@@ -8,8 +8,13 @@ env-check:
 data-schemas:
 	$(PY) -m sqlforge.schemas.build all
 
-data: data-schemas
-	@echo "TODO(day2-3): sampler -> verify -> nlgen -> paraphrase -> splits"
+# One command: schemas -> verified dataset -> paraphrase (DVC skips unchanged stages). Needs Ollama for paraphrase.
+data:
+	uv run dvc repro
+
+data-push:
+	docker compose up -d minio
+	uv run dvc push
 
 smoke:
 	$(PY) -m sqlforge.train.smoke --out results/smoke_7b_short.json

@@ -1,0 +1,93 @@
+schema: '2.0'
+stages:
+  schemas:
+    cmd: uv run python -m sqlforge.schemas.build all
+    deps:
+    - path: dbt/smard/models
+      hash: md5
+      md5: 5f5613c4445356963a6873387ef00da2.dir
+      size: 2212
+      nfiles: 6
+    - path: dbt/smard/seeds
+      hash: md5
+      md5: f757faaf48c8347a626b2206f8fd996e.dir
+      size: 544
+      nfiles: 2
+    - path: src/sqlforge/schemas/build.py
+      hash: md5
+      md5: 3366e6855f526ec8b5d195e9599ccb99
+      size: 6630
+    - path: src/sqlforge/schemas/smard_download.py
+      hash: md5
+      md5: d9808f975c093d2c752e829bb9be5c5f
+      size: 3198
+    outs:
+    - path: data/db
+      hash: md5
+      md5: 77b4fd87249b044df1e65db7c639aded.dir
+      size: 42766336
+      nfiles: 3
+    - path: data/raw
+      hash: md5
+      md5: e5654ca49218818493572b0819d6c9fc.dir
+      size: 26007922
+      nfiles: 31
+  dataset:
+    cmd: uv run python -m sqlforge.dataset.build --scale 1.0 --workers 12
+    deps:
+    - path: data/db
+      hash: md5
+      md5: 77b4fd87249b044df1e65db7c639aded.dir
+      size: 42766336
+      nfiles: 3
+    - path: rust/sqlnorm/src
+      hash: md5
+      md5: 83edd21d1d3c3a572348c0715db6f228.dir
+      size: 12410
+      nfiles: 3
+    - path: src/sqlforge/dataset
+      hash: md5
+      md5: b6055154ce7c891d0553e49d6d05bca4.dir
+      size: 21462
+      nfiles: 6
+    - path: src/sqlforge/nlgen
+      hash: md5
+      md5: 1e7ebea333223c811ec59885d2bd99cc.dir
+      size: 38655
+      nfiles: 4
+    - path: src/sqlforge/sampler
+      hash: md5
+      md5: 1020e24934f427fc22d1f89cefabdea9.dir
+      size: 57826
+      nfiles: 6
+    - path: src/sqlforge/schemas
+      hash: md5
+      md5: 87f0587ad62b87fbc7950d17478f21af.dir
+      size: 64498
+      nfiles: 12
+    - path: src/sqlforge/verify
+      hash: md5
+      md5: e2b1efdc5f6bc059725a8b7209588eb9.dir
+      size: 16198
+      nfiles: 6
+    outs:
+    - path: data/dataset/test_in_template.parquet
+      hash: md5
+      md5: 20fb0fcbcae3d6cddf0c994b342d6b53
+      size: 98184
+    - path: data/dataset/test_ood_template.parquet
+      hash: md5
+      md5: 6ae862b2ad6d18fb3367386b532b6cb4
+      size: 84373
+    - path: data/dataset/train_template.parquet
+      hash: md5
+      md5: e5e2406916f73b15902f0d872cc7845e
+      size: 2564775
+    - path: data/dataset/val_template.parquet
+      hash: md5
+      md5: eeef50962423ca29694e702c3b5c6198
+      size: 231888
+    - path: results/dataset_build.json
+      hash: md5
+      md5: afdbe7f9e63b1ae6d753027729bbe398
+      size: 2876

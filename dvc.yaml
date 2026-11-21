@@ -1,0 +1,50 @@
+stages:
+  schemas:
+    cmd: uv run python -m sqlforge.schemas.build all
+    deps:
+      - src/sqlforge/schemas/build.py
+      - src/sqlforge/schemas/smard_download.py
+      - dbt/smard/models
+      - dbt/smard/seeds
+    outs:
+      - data/db
+      - data/raw:
+          persist: true   # cached downloads (Open-Meteo JSON, SMARD parquet) survive re-runs
+
+  dataset:
+    cmd: uv run python -m sqlforge.dataset.build --scale 1.0 --workers 12
+    deps:
+      - data/db
+      - src/sqlforge/schemas
+      - src/sqlforge/sampler
+      - src/sqlforge/nlgen
+      - src/sqlforge/verify
+      - src/sqlforge/dataset
+      - rust/sqlnorm/src
+    outs:
+      - data/dataset/train_template.parquet
+      - data/dataset/val_template.parquet
+      - data/dataset/test_in_template.parquet
+      - data/dataset/test_ood_template.parquet
+    metrics:
+      - results/dataset_build.json:
+          cache: false
+
+  paraphrase:
+    cmd: uv run python -m sqlforge.paraphrase.ollama --model qwen3:8b --workers 12
+    deps:
+      - data/dataset/train_template.parquet
+      - data/dataset/val_template.parquet
+      - data/dataset/test_in_template.parquet
+      - data/dataset/test_ood_template.parquet
+      - src/sqlforge/paraphrase
+    outs:
+      - data/paraphrase_cache.jsonl:
+          persist: true   # LLM outputs cached by (model, lang, template) -> re-runs are deterministic
+      - data/dataset/train.parquet
+      - data/dataset/val.parquet
+      - data/dataset/test_in.parquet
+      - data/dataset/test_ood.parquet
+    metrics:
+      - results/paraphrase.json:
+          cache: false

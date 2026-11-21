@@ -1,0 +1,46 @@
+db: smard
+tables:
+  region:
+    en: [region, regions]
+    de: [Region, Regionen]
+    columns:
+      region_code: {role: key, en: region code, de: Regionscode}
+      name_en: {role: name, en: English region name, de: englischer Regionsname}
+      name_de: {role: name, en: German region name, de: deutscher Regionsname}
+      region_type: {role: cat, en: region type, de: Regionstyp}
+  energy_source:
+    en: [energy source, energy sources]
+    de: [Energieträger, Energieträger]
+    columns:
+      source_code: {role: key, en: source code, de: Energieträgercode}
+      name_en: {role: name, en: English source name, de: englischer Name}
+      name_de: {role: name, en: German source name, de: deutscher Name}
+      is_renewable: {role: bool, en: renewable, de: erneuerbar}
+  generation:
+    en: [generation record, generation records]
+    de: [Erzeugungswert, Erzeugungswerte]
+    columns:
+      hour_utc: {role: ts, en: hour (UTC), de: Stunde (UTC)}
+      region_code: {role: fk, en: region code, de: Regionscode}
+      source_code: {role: fk, en: source code, de: Energieträgercode}
+      generation_mwh: {role: num, en: generation in MWh, de: Erzeugung in MWh}
+  grid_load:
+    en: [grid load record, grid load records]
+    de: [Netzlastwert, Netzlastwerte]
+    columns:
+      hour_utc: {role: ts, en: hour (UTC), de: Stunde (UTC)}
+      region_code: {role: fk, en: region code, de: Regionscode}
+      load_mwh: {role: num, en: grid load in MWh, de: Netzlast in MWh}
+      residual_load_mwh: {role: num, en: residual load in MWh, de: Residuallast in MWh}
+  day_ahead_price:
+    en: [day-ahead price, day-ahead prices]
+    de: [Day-Ahead-Preis, Day-Ahead-Preise]
+    columns:
+      hour_utc: {role: ts, en: hour (UTC), de: Stunde (UTC)}
+      region_code: {role: fk, en: region code, de: Regionscode}
+      price_eur_mwh: {role: num, en: price in EUR/MWh, de: Preis in EUR/MWh}
+joins:
+  - [generation.region_code, region.region_code]
+  - [generation.source_code, energy_source.source_code]
+  - [grid_load.region_code, region.region_code]
+  - [day_ahead_price.region_code, region.region_code]

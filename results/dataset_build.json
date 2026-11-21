@@ -1,0 +1,142 @@
+{
+  "scale": 1.0,
+  "splits": {
+    "test_ood": {
+      "n": 1000,
+      "by_db": {
+        "weather": 1000
+      },
+      "by_lang": {
+        "en": 488,
+        "de": 512
+      },
+      "by_kind": {
+        "above_avg": 24,
+        "agg": 202,
+        "count_all": 3,
+        "count_distinct": 45,
+        "count_where": 148,
+        "group_agg": 143,
+        "group_count": 33,
+        "having": 13,
+        "in_subquery": 59,
+        "list_where": 120,
+        "time_group": 148,
+        "topk": 62
+      },
+      "renamed_share": 0.0,
+      "rejected": {
+        "rows": 251,
+        "none": 444,
+        "ties": 220,
+        "null": 12
+      },
+      "duplicates_dropped": 598,
+      "seconds": 1.2
+    },
+    "test_in": {
+      "n": 1000,
+      "by_db": {
+        "tpch": 600,
+        "smard": 400
+      },
+      "by_lang": {
+        "de": 497,
+        "en": 503
+      },
+      "by_kind": {
+        "above_avg": 36,
+        "agg": 155,
+        "count_all": 11,
+        "count_distinct": 59,
+        "count_where": 126,
+        "group_agg": 187,
+        "group_count": 56,
+        "having": 36,
+        "in_subquery": 64,
+        "list_where": 90,
+        "time_group": 111,
+        "topk": 69
+      },
+      "renamed_share": 0.0,
+      "rejected": {
+        "ties": 310,
+        "none": 273,
+        "rows": 496,
+        "null": 51
+      },
+      "duplicates_dropped": 1207,
+      "seconds": 4.4
+    },
+    "val": {
+      "n": 1000,
+      "by_db": {
+        "tpch": 600,
+        "smard": 400
+      },
+      "by_lang": {
+        "en": 530,
+        "de": 470
+      },
+      "by_kind": {
+        "above_avg": 40,
+        "agg": 156,
+        "count_all": 1,
+        "count_distinct": 48,
+        "count_where": 113,
+        "group_agg": 181,
+        "group_count": 81,
+        "having": 24,
+        "in_subquery": 69,
+        "list_where": 110,
+        "time_group": 94,
+        "topk": 83
+      },
+      "renamed_share": 0.202,
+      "rejected": {
+        "ties": 279,
+        "none": 318,
+        "rows": 475,
+        "null": 46,
+        "variant": 1
+      },
+      "duplicates_dropped": 1857,
+      "seconds": 6.6
+    },
+    "train": {
+      "n": 12000,
+      "by_db": {
+        "tpch": 7200,
+        "smard": 4800
+      },
+      "by_lang": {
+        "en": 5968,
+        "de": 6032
+      },
+      "by_kind": {
+        "above_avg": 386,
+        "agg": 1775,
+        "count_distinct": 552,
+        "count_where": 1092,
+        "group_agg": 2149,
+        "group_count": 686,
+        "having": 271,
+        "in_subquery": 987,
+        "list_where": 1984,
+        "time_group": 1240,
+        "topk": 878
+      },
+      "renamed_share": 0.228,
+      "rejected": {
+        "rows": 3197,
+        "none": 1943,
+        "ties": 1829,
+        "null": 299,
+        "variant": 50
+      },
+      "duplicates_dropped": 18615,
+      "seconds": 49.0
+    }
+  },
+  "leak_check": "passed"
+}

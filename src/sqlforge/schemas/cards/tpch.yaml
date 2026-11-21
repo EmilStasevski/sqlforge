@@ -1,0 +1,87 @@
+# Roles: key, fk, name (identifying text), cat (low-cardinality category), num (measure), date, bool.
+# Columns not listed still appear in the DDL but are never used by the sampler.
+db: tpch
+tables:
+  region:
+    en: [region, regions]
+    de: [Region, Regionen]
+    columns:
+      r_regionkey: {role: key, en: region key, de: Regionsschlüssel}
+      r_name: {role: cat, en: region name, de: Regionsname}
+  nation:
+    en: [nation, nations]
+    de: [Land, Länder]
+    columns:
+      n_nationkey: {role: key, en: nation key, de: Länderschlüssel}
+      n_name: {role: cat, en: nation name, de: Ländername}
+      n_regionkey: {role: fk, en: region key, de: Regionsschlüssel}
+  customer:
+    en: [customer, customers]
+    de: [Kunde, Kunden]
+    columns:
+      c_custkey: {role: key, en: customer key, de: Kundennummer}
+      c_name: {role: name, en: customer name, de: Kundenname}
+      c_nationkey: {role: fk, en: nation key, de: Länderschlüssel}
+      c_acctbal: {role: num, en: account balance, de: Kontostand}
+      c_mktsegment: {role: cat, en: market segment, de: Marktsegment}
+  supplier:
+    en: [supplier, suppliers]
+    de: [Lieferant, Lieferanten]
+    columns:
+      s_suppkey: {role: key, en: supplier key, de: Lieferantennummer}
+      s_name: {role: name, en: supplier name, de: Lieferantenname}
+      s_nationkey: {role: fk, en: nation key, de: Länderschlüssel}
+      s_acctbal: {role: num, en: account balance, de: Kontostand}
+  part:
+    en: [part, parts]
+    de: [Teil, Teile]
+    columns:
+      p_partkey: {role: key, en: part key, de: Teilenummer}
+      p_name: {role: name, en: part name, de: Teilename}
+      p_brand: {role: cat, en: brand, de: Marke}
+      p_type: {role: cat, en: part type, de: Teiletyp}
+      p_size: {role: num, en: size, de: Größe}
+      p_container: {role: cat, en: container, de: Behälter}
+      p_retailprice: {role: num, en: retail price, de: Verkaufspreis}
+  partsupp:
+    en: [part supply, part supplies]
+    de: [Teilelieferung, Teilelieferungen]
+    columns:
+      ps_partkey: {role: fk, en: part key, de: Teilenummer}
+      ps_suppkey: {role: fk, en: supplier key, de: Lieferantennummer}
+      ps_availqty: {role: num, en: available quantity, de: verfügbare Menge}
+      ps_supplycost: {role: num, en: supply cost, de: Lieferkosten}
+  orders:
+    en: [order, orders]
+    de: [Bestellung, Bestellungen]
+    columns:
+      o_orderkey: {role: key, en: order key, de: Bestellnummer}
+      o_custkey: {role: fk, en: customer key, de: Kundennummer}
+      o_orderstatus: {role: cat, en: order status, de: Bestellstatus}
+      o_totalprice: {role: num, en: total price, de: Gesamtpreis}
+      o_orderdate: {role: date, en: order date, de: Bestelldatum}
+      o_orderpriority: {role: cat, en: order priority, de: Bestellpriorität}
+  lineitem:
+    en: [line item, line items]
+    de: [Bestellposition, Bestellpositionen]
+    columns:
+      l_orderkey: {role: fk, en: order key, de: Bestellnummer}
+      l_partkey: {role: fk, en: part key, de: Teilenummer}
+      l_suppkey: {role: fk, en: supplier key, de: Lieferantennummer}
+      l_quantity: {role: num, en: quantity, de: Menge}
+      l_extendedprice: {role: num, en: extended price, de: Positionspreis}
+      l_discount: {role: num, en: discount, de: Rabatt}
+      l_returnflag: {role: cat, en: return flag, de: Rückgabekennzeichen}
+      l_shipdate: {role: date, en: ship date, de: Versanddatum}
+      l_receiptdate: {role: date, en: receipt date, de: Empfangsdatum}
+      l_shipmode: {role: cat, en: ship mode, de: Versandart}
+joins:
+  - [nation.n_regionkey, region.r_regionkey]
+  - [customer.c_nationkey, nation.n_nationkey]
+  - [supplier.s_nationkey, nation.n_nationkey]
+  - [orders.o_custkey, customer.c_custkey]
+  - [lineitem.l_orderkey, orders.o_orderkey]
+  - [lineitem.l_partkey, part.p_partkey]
+  - [lineitem.l_suppkey, supplier.s_suppkey]
+  - [partsupp.ps_partkey, part.p_partkey]
+  - [partsupp.ps_suppkey, supplier.s_suppkey]

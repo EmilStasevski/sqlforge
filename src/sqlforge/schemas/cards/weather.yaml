@@ -1,0 +1,41 @@
+# Held-out test schema (test_ood). Never used for training.
+db: weather
+tables:
+  city:
+    en: [city, cities]
+    de: [Stadt, Städte]
+    columns:
+      city_id: {role: key, en: city id, de: Stadt-ID}
+      name: {role: name, en: city name, de: Stadtname}
+      latitude: {role: num, en: latitude, de: Breitengrad}
+      longitude: {role: num, en: longitude, de: Längengrad}
+      elevation_m: {role: num, en: elevation in metres, de: Höhe in Metern}
+  weather_daily:
+    en: [daily weather record, daily weather records]
+    de: [Tageswetterwert, Tageswetterwerte]
+    columns:
+      city_id: {role: fk, en: city id, de: Stadt-ID}
+      date: {role: date, en: date, de: Datum}
+      temperature_2m_max: {role: num, en: maximum temperature, de: Höchsttemperatur}
+      temperature_2m_min: {role: num, en: minimum temperature, de: Tiefsttemperatur}
+      temperature_2m_mean: {role: num, en: mean temperature, de: Durchschnittstemperatur}
+      precipitation_sum: {role: num, en: precipitation, de: Niederschlag}
+      snowfall_sum: {role: num, en: snowfall, de: Schneefall}
+      sunshine_duration: {role: num, en: sunshine duration, de: Sonnenscheindauer}
+      wind_speed_10m_max: {role: num, en: maximum wind speed, de: maximale Windgeschwindigkeit}
+      wind_gusts_10m_max: {role: num, en: maximum wind gust, de: maximale Windböe}
+  weather_hourly:
+    en: [hourly weather record, hourly weather records]
+    de: [Stundenwetterwert, Stundenwetterwerte]
+    columns:
+      city_id: {role: fk, en: city id, de: Stadt-ID}
+      ts: {role: ts, en: timestamp, de: Zeitpunkt}
+      temperature_2m: {role: num, en: temperature, de: Temperatur}
+      relative_humidity_2m: {role: num, en: relative humidity, de: relative Luftfeuchtigkeit}
+      precipitation: {role: num, en: precipitation, de: Niederschlag}
+      cloud_cover: {role: num, en: cloud cover, de: Bewölkung}
+      wind_speed_10m: {role: num, en: wind speed, de: Windgeschwindigkeit}
+      pressure_msl: {role: num, en: air pressure, de: Luftdruck}
+joins:
+  - [weather_daily.city_id, city.city_id]
+  - [weather_hourly.city_id, city.city_id]

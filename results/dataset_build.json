@@ -101,7 +101,7 @@
         "variant": 1
       },
       "duplicates_dropped": 1857,
-      "seconds": 6.6
+      "seconds": 6.9
     },
     "train": {
       "n": 12000,
@@ -135,7 +135,7 @@
         "variant": 50
       },
       "duplicates_dropped": 18615,
-      "seconds": 49.0
+      "seconds": 47.9
     }
   },
   "leak_check": "passed"

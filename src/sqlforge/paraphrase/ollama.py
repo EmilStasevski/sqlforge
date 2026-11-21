@@ -113,6 +113,12 @@ CONCEPTS: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = [
     ("en", ("chronolog",), ("chronolog", "sorted", "ordered", "in order")),
     ("en", (" no ", " not "), (" no ", " not ", "without", "none", "n't")),
     ("en", ("round",), ("round",)),
+    ("en", ("first day of",), ("first day", "start of", "beginning of", "truncat")),
+    (
+        "en",
+        ("one row per",),
+        ("row", "per year", "per month", "each year", "each month", "every year", "every month"),
+    ),
     ("en", ("per ", "each "), ("per ", "each ", "every ", " by ", "for all")),
     ("de", ("durchschnitt",), ("durchschnitt", "mittelwert", "mittlere")),
     ("de", ("summe",), ("summe", "gesamt", "insgesamt", "summiert")),
@@ -132,6 +138,12 @@ CONCEPTS: list[tuple[str, tuple[str, ...], tuple[str, ...]]] = [
     ("de", ("chronologisch",), ("chronologisch", "sortiert", "geordnet", "reihenfolge")),
     ("de", ("keine", "nicht"), ("kein", "nicht", "ohne")),
     ("de", ("runde",), ("rund", "gerundet")),
+    ("de", ("monatserster",), ("monatserste", "ersten tag", "monatsanfang", "monatsbeginn")),
+    (
+        "de",
+        ("eine zeile pro",),
+        ("zeile", "pro jahr", "pro monat", "je jahr", "je monat", "jedes jahr", "jeden monat"),
+    ),
     ("de", (" pro ", " je "), (" pro ", " je ", "jede", "für alle", "nach ")),
 ]
 _NUM = re.compile(r"\d+(?:\.\d+)?")

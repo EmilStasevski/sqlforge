@@ -335,23 +335,37 @@ def render_question(spec: Spec, card: Card, lang: str, rng: random.Random) -> Re
 
     elif k == "time_group":
         D = x.term(sel[0].col)
-        unit = ("year" if en else "Jahr") if sel[0].func == "YEAR" else ("month" if en else "Monat")
+        # Explicit bucket representation: "per month" alone is ambiguous (month-of-year vs. calendar month,
+        # one column vs. year+month columns); the SQL uses date_trunc('month', ...) / year(...).
+        is_year = sel[0].func == "YEAR"
+        if en:
+            unit = (
+                f"per year of {D} (one row per year)"
+                if is_year
+                else f"per month of {D} (one row per month, given as the first day of that month)"
+            )
+        else:
+            unit = (
+                f"pro Jahr ({D}, eine Zeile pro Jahr)"
+                if is_year
+                else f"pro Monat ({D}, eine Zeile pro Monat, angegeben als Monatserster)"
+            )
         m = sel[1]
         if m.func == "COUNT":
             if en:
                 F = x.filters(spec.filters, spec.base)
-                q = f"How many {T}{F} are there per {unit} of {D}? Sort chronologically."
+                q = f"How many {T}{F} are there {unit}? Sort chronologically."
             else:
                 F = x.filters(spec.filters, spec.base, "mid")
-                q = f"Wie viele {T}{F} gibt es pro {unit} ({D})? Chronologisch sortiert."
+                q = f"Wie viele {T}{F} gibt es {unit}? Chronologisch sortiert."
         else:
             C = x.term(m.col)
             if en:
                 F = x.filters(spec.filters, spec.base)
-                q = f"What is the {x.agg(m)} {C} of {T}{F} per {unit} of {D}, in chronological order?"
+                q = f"What is the {x.agg(m)} {C} of {T}{F} {unit}, in chronological order?"
             else:
                 F = x.filters(spec.filters, spec.base, "mid")
-                q = f"Was ist {x.agg(m)} von {C} der {T}{F} pro {unit} ({D}), chronologisch sortiert?"
+                q = f"Was ist {x.agg(m)} von {C} der {T}{F} {unit}, chronologisch sortiert?"
             q += x.round_phrase(m)
 
     elif k == "in_subquery":

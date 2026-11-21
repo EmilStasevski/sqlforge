@@ -1,0 +1,31 @@
+{
+  "model": "qwen3:8b",
+  "splits": {
+    "test_ood": {
+      "n": 1000,
+      "paraphrase_share": 0.791,
+      "outcomes": {
+        "ok": 791,
+        "unchanged": 194,
+        "concept": 1,
+        "literal": 3,
+        "term": 9,
+        "numbers": 2
+      },
+      "seconds": 98.9
+    },
+    "test_in": {
+      "n": 1000,
+      "paraphrase_share": 0.763,
+      "outcomes": {
+        "ok": 763,
+        "unchanged": 191,
+        "numbers": 3,
+        "term": 34,
+        "literal": 4,
+        "concept": 5
+      },
+      "seconds": 75.9
+    }
+  }
+}

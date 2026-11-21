@@ -1,0 +1,25 @@
+{
+  "n_queries": 15000,
+  "repeats": 5,
+  "median_seconds": {
+    "sqlnorm_per_call": 0.2375,
+    "sqlnorm_batch": 0.264,
+    "sqlglot": 4.2751
+  },
+  "queries_per_second": {
+    "sqlnorm_per_call": 63167,
+    "sqlnorm_batch": 56827,
+    "sqlglot": 3509
+  },
+  "speedup_vs_sqlglot": {
+    "per_call": 18.0,
+    "batch": 16.2
+  },
+  "dedup_partition_agrees_first_2000": true,
+  "env": {
+    "python": "3.12.14",
+    "sqlglot": "30.33.0",
+    "sqlglot_rust_tokenizer": false,
+    "cpu": "x86_64"
+  }
+}

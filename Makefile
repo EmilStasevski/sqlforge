@@ -29,7 +29,7 @@ test:
 	uv run pytest -q
 
 bench:
-	@echo "TODO(day2): sqlnorm vs sqlglot"; exit 1
+	$(PY) scripts/bench_sqlnorm.py
 
 serve up:
 	docker compose up -d

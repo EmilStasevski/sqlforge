@@ -1,0 +1,19 @@
+[package]
+name = "sqlnorm"
+version = "0.1.0"
+edition = "2021"
+description = "SQL guard + normalizer + feature extractor for sqlforge (sqlparser-rs, optional PyO3 bindings)"
+license = "MIT"
+
+[lib]
+name = "sqlnorm"
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = []
+python = ["dep:pyo3"]
+
+[dependencies]
+sqlparser = { version = "0.64.0", features = ["visitor"] }
+xxhash-rust = { version = "0.8.21", features = ["xxh3"] }
+pyo3 = { version = "0.30.1", features = ["extension-module", "abi3-py312"], optional = true }

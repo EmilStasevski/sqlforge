@@ -11,10 +11,11 @@ dependencies = [
     "pandera[polars]>=0.20",
     "pyyaml>=6",
     "requests>=2.32",
+    "sqlnorm",
 ]
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = ["pytest>=8", "ruff>=0.6", "sqlglot>=25"]
 # Heavy GPU stack; not installed in CI (`uv sync --group dev` only).
 train = [
     "torch>=2.7",
@@ -39,6 +40,7 @@ explicit = true
 
 [tool.uv.sources]
 torch = { index = "pytorch-cu128" }
+sqlnorm = { path = "rust/sqlnorm" }
 
 [build-system]
 requires = ["hatchling"]

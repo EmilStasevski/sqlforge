@@ -25,6 +25,9 @@ No workarounds were needed for Blackwell beyond using the cu128 wheel index. `at
 - duckdb 2.0.1 (tpch extension via `INSTALL tpch`), polars 2.1.0, pyarrow 26.0.1, pandera 0.36.0, sqlglot 30.33.0
 - Rust 1.99.1, sqlparser 0.64.0, pyo3 0.30.1 (abi3-py312), maturin (build backend, via uv path dependency)
 - Go 1.27.4, Docker 29.9.3, Ollama 0.13.5, uv 0.12.21
+- dbt-core 1.12.7 + dbt-duckdb 1.11.1, DVC 3.67.1 (S3 remote = MinIO), boto3
+- Paraphrase model: Ollama `qwen3:8b` (`think: false`). `qwen3:4b-instruct-2507` was tried first: on the same 120
+  val questions it returned the template unchanged 81 % of the time, so only 18 % of its paraphrases were accepted (vs 77 % for qwen3:8b).
 
 ## Base model
 - `Qwen/Qwen2.5-Coder-7B-Instruct` (snapshot `c03e6d358207e414f1eca0bb1891e29f1db0e242`), 4-bit NF4.
@@ -46,5 +49,10 @@ Values copied from `results/smoke_7b_*.json`.
   S3-API artifact store.
 
 ## Gotchas
+- transformers 5: `apply_chat_template(tokenize=True)` returns a dict, not a list of ids.
+- DuckDB opens one thread pool per connection; 8 worker processes x many cached connections hit the OS thread
+  limit ("can't start new thread"). Fix: `SET threads = 2` per connection and at most 8 cached variant connections.
+  (Passing `config={"threads": 2}` to `connect` fails if the same file is already open with a different config.)
+- dbt-duckdb: `GROUP BY ALL` mis-detects aggregates inside `CASE ... avg(...) ... sum(...)`; use explicit ordinals.
 - DuckDB `executemany` is row-by-row: inserting 105k weather rows took minutes. Arrow bulk insert (`con.register`) takes <1 s.
 - `uv run` syncs inexactly, so the train group stays installed; `uv sync` without `--group train` removes it.

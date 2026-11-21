@@ -33,7 +33,9 @@ def user_msg(ddl: str, question: str) -> str:
 
 def fewshot_examples(n: int = N_SHOTS) -> list[dict]:
     """Fixed exemplars from train (original names, short DDL, distinct kinds, both languages)."""
-    df = pl.read_parquet(DATA_DIR / "train.parquet").filter(~pl.col("renamed"))
+    # Template questions: exemplars stay fixed regardless of paraphrasing.
+    df = pl.read_parquet(DATA_DIR / "train_template.parquet").filter(~pl.col("renamed"))
+    df = df.with_columns(pl.col("question_template").alias("question"))
     df = df.with_columns(pl.col("ddl").str.len_chars().alias("_len")).filter(pl.col("_len") < 450)
     picks = []
     for kind, lang in [("group_agg", "en"), ("count_where", "de"), ("topk", "en")][:n]:

@@ -1,0 +1,27 @@
+{
+  "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "steps": 50,
+  "max_length": 1024,
+  "effective_batch": 16,
+  "sample_tokens_max": 931,
+  "sample_tokens_mean": 907.7,
+  "peak_vram_allocated_gib": 6.4,
+  "peak_vram_reserved_gib": 6.52,
+  "load_seconds": 3.3,
+  "train_seconds": 997.6,
+  "seconds_per_step": 19.95,
+  "loss_first": 0.09639249444007873,
+  "loss_last": 3.450590884312987e-05,
+  "train_loss": 0.019362372616888023,
+  "gpu": "NVIDIA GeForce RTX 5060 Ti",
+  "env": {
+    "python": "3.12.14",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "transformers": "5.24.0",
+    "peft": "0.22.0",
+    "trl": "1.18.2",
+    "bitsandbytes": "0.50.2",
+    "accelerate": "1.16.0"
+  }
+}

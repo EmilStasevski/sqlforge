@@ -1,4 +1,4 @@
-.PHONY: env-check data data-schemas smoke train eval serve up down test lint bench loadtest
+.PHONY: env-check data data-push data-schemas smoke train eval eval-baseline results-md serve up down test lint bench loadtest
 
 PY := uv run python
 
@@ -23,8 +23,16 @@ smoke:
 train:
 	@echo "TODO(day4)"; exit 1
 
-eval:
-	@echo "TODO(day3/5)"; exit 1
+eval-baseline:
+	$(PY) -m sqlforge.eval.run --tag base_zeroshot --mode zeroshot
+	$(PY) -m sqlforge.eval.run --tag base_fewshot --mode fewshot
+	$(PY) scripts/make_results_md.py
+
+eval: eval-baseline
+	@echo "TODO(day5): QLoRA adapter eval"
+
+results-md:
+	$(PY) scripts/make_results_md.py
 
 lint:
 	uv run ruff check src tests scripts

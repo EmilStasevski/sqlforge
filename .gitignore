@@ -1,0 +1,13 @@
+data/
+!data/.gitkeep
+.venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+.pytest_cache/
+mlruns/
+wandb/
+rust/sqlnorm/target/
+go/gateway/gateway
+*.egg-info/
+.env

@@ -1,0 +1,33 @@
+version: 2
+seeds:
+  - name: energy_source
+    columns:
+      - name: source_code
+        tests: [unique, not_null]
+  - name: region
+    columns:
+      - name: region_code
+        tests: [unique, not_null]
+models:
+  - name: generation
+    columns:
+      - name: source_code
+        tests:
+          - not_null
+          - relationships: {arguments: {to: ref('energy_source'), field: source_code}}
+      - name: region_code
+        tests:
+          - relationships: {arguments: {to: ref('region'), field: region_code}}
+      - name: generation_mwh
+        tests: [not_null]
+  - name: grid_load
+    columns:
+      - name: region_code
+        tests:
+          - relationships: {arguments: {to: ref('region'), field: region_code}}
+  - name: day_ahead_price
+    columns:
+      - name: hour_utc
+        tests: [unique, not_null]
+      - name: price_eur_mwh
+        tests: [not_null]

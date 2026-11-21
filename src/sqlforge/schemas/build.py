@@ -13,6 +13,7 @@ import argparse
 import json
 import os
 import shutil
+import subprocess
 import time
 from pathlib import Path
 
@@ -23,6 +24,7 @@ import requests
 DB_DIR = Path("data/db")
 RAW_DIR = Path("data/raw")
 TPCH_SF = 0.1
+DBT_DIR = Path(__file__).resolve().parents[3] / "dbt" / "smard"
 
 # Ruhrwatt's bronze layer (reuse, don't redo). Override with SQLFORGE_SMARD_BRONZE.
 RUHRWATT_BRONZE = Path(
@@ -78,24 +80,32 @@ def build_tpch() -> Path:
     return path
 
 
-def build_smard() -> Path:
+def build_smard(run_dbt: bool = True) -> Path:
     raw = RAW_DIR / "smard"
     if not raw.exists():
-        if not RUHRWATT_BRONZE.exists():
-            raise SystemExit(
-                f"SMARD bronze not found at {RUHRWATT_BRONZE}. Set SQLFORGE_SMARD_BRONZE "
-                "(standalone SMARD downloader: TODO Day 2)."
-            )
-        shutil.copytree(RUHRWATT_BRONZE, raw)
+        if RUHRWATT_BRONZE.exists():
+            shutil.copytree(RUHRWATT_BRONZE, raw)
+        else:
+            from sqlforge.schemas.smard_download import download
+
+            download(raw)
     path = DB_DIR / "smard.duckdb"
     con = _fresh(path)
+    con.execute("CREATE SCHEMA raw")
     con.execute(
-        f"""CREATE TABLE smard_raw AS
+        f"""CREATE TABLE raw.smard_raw AS
         SELECT ts_utc, dataset, region, value, is_native_15min
         FROM read_parquet('{raw}/**/*.parquet', hive_partitioning = true)
         ORDER BY dataset, region, ts_utc"""
     )
     con.close()
+    if run_dbt:
+        # dbt builds the relational marts (main schema) + runs its data tests.
+        subprocess.run(
+            ["dbt", "build", "--project-dir", str(DBT_DIR), "--profiles-dir", str(DBT_DIR)],
+            check=True,
+            env={**os.environ, "SMARD_DB": str(path.resolve())},
+        )
     return path
 
 
@@ -171,7 +181,11 @@ BUILDERS = {"tpch": build_tpch, "smard": build_smard, "weather": build_weather}
 def summary(path: Path) -> dict[str, int]:
     con = duckdb.connect(str(path), read_only=True)
     tables = [
-        r[0] for r in con.execute("SELECT table_name FROM information_schema.tables ORDER BY 1").fetchall()
+        r[0]
+        for r in con.execute(
+            "SELECT table_name FROM information_schema.tables "
+            "WHERE table_schema = 'main' AND table_type = 'BASE TABLE' ORDER BY 1"
+        ).fetchall()
     ]
     out = {t: con.execute(f'SELECT COUNT(*) FROM "{t}"').fetchone()[0] for t in tables}
     con.close()

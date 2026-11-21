@@ -16,6 +16,8 @@ dependencies = [
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.6", "sqlglot>=25"]
+# Data pipeline tools (dbt, DVC, S3 client); not needed in CI.
+pipeline = ["dbt-duckdb>=1.8", "dvc[s3]>=3.50", "boto3>=1.34"]
 # Heavy GPU stack; not installed in CI (`uv sync --group dev` only).
 train = [
     "torch>=2.7",
@@ -30,7 +32,7 @@ train = [
 ]
 
 [tool.uv]
-default-groups = ["dev"]
+default-groups = ["dev", "pipeline"]
 
 # Blackwell (sm_120) needs CUDA >= 12.8 PyTorch wheels.
 [[tool.uv.index]]

@@ -1,0 +1,11 @@
+version: 2
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: smard_raw
+        columns:
+          - name: ts_utc
+            tests: [not_null]
+          - name: dataset
+            tests: [not_null]

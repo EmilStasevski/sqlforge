@@ -1,0 +1,4 @@
+region_code,name_en,name_de,region_type
+DE,Germany,Deutschland,country
+Amprion,Amprion control area,Regelzone Amprion,control_area
+DE-LU,Germany-Luxembourg bidding zone,Gebotszone Deutschland-Luxemburg,bidding_zone

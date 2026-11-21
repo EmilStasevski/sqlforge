@@ -11,3 +11,6 @@ rust/sqlnorm/target/
 go/gateway/gateway
 *.egg-info/
 .env
+dbt/smard/target/
+dbt/smard/logs/
+logs/

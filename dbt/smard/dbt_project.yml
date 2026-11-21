@@ -1,0 +1,21 @@
+name: smard
+version: "1.0"
+profile: smard
+config-version: 2
+model-paths: [models]
+seed-paths: [seeds]
+macro-paths: [macros]
+target-path: target
+clean-targets: [target, dbt_packages]
+
+models:
+  smard:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: main
+seeds:
+  smard:
+    +schema: main

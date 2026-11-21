@@ -1,0 +1,9 @@
+source_code,name_en,name_de,is_renewable
+lignite,lignite,Braunkohle,false
+hard_coal,hard coal,Steinkohle,false
+gas,natural gas,Erdgas,false
+biomass,biomass,Biomasse,true
+hydro,hydropower,Wasserkraft,true
+wind_onshore,onshore wind,Wind an Land,true
+wind_offshore,offshore wind,Wind auf See,true
+pv,photovoltaics,Photovoltaik,true

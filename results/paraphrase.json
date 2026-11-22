@@ -1,18 +1,32 @@
 {
   "model": "qwen3:8b",
   "splits": {
-    "test_ood": {
-      "n": 1000,
-      "paraphrase_share": 0.791,
+    "train": {
+      "n": 12000,
+      "paraphrase_share": 0.725,
       "outcomes": {
-        "ok": 791,
-        "unchanged": 194,
-        "concept": 1,
-        "literal": 3,
-        "term": 9,
-        "numbers": 2
+        "ok": 8703,
+        "term": 596,
+        "unchanged": 2478,
+        "numbers": 23,
+        "concept": 83,
+        "literal": 116,
+        "length": 1
       },
-      "seconds": 98.9
+      "seconds": 1797.4
+    },
+    "val": {
+      "n": 1000,
+      "paraphrase_share": 0.747,
+      "outcomes": {
+        "ok": 747,
+        "unchanged": 193,
+        "term": 39,
+        "concept": 9,
+        "literal": 9,
+        "numbers": 3
+      },
+      "seconds": 0.2
     },
     "test_in": {
       "n": 1000,
@@ -25,7 +39,20 @@
         "literal": 4,
         "concept": 5
       },
-      "seconds": 75.9
+      "seconds": 0.2
+    },
+    "test_ood": {
+      "n": 1000,
+      "paraphrase_share": 0.791,
+      "outcomes": {
+        "ok": 791,
+        "unchanged": 194,
+        "concept": 1,
+        "literal": 3,
+        "term": 9,
+        "numbers": 2
+      },
+      "seconds": 0.2
     }
   }
 }

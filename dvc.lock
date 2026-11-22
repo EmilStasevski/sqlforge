@@ -52,8 +52,8 @@ stages:
       nfiles: 6
     - path: src/sqlforge/nlgen
       hash: md5
-      md5: 1e7ebea333223c811ec59885d2bd99cc.dir
-      size: 38655
+      md5: 7f4cfc7a77c348271c858a0914c6daed.dir
+      size: 39467
       nfiles: 4
     - path: src/sqlforge/sampler
       hash: md5
@@ -73,21 +73,71 @@ stages:
     outs:
     - path: data/dataset/test_in_template.parquet
       hash: md5
-      md5: 20fb0fcbcae3d6cddf0c994b342d6b53
-      size: 98184
+      md5: 4f74ad4620fde5e8bbb6eb5cff35b7df
+      size: 98457
     - path: data/dataset/test_ood_template.parquet
       hash: md5
-      md5: 6ae862b2ad6d18fb3367386b532b6cb4
-      size: 84373
+      md5: 24eac8378ff0620f8a0f2d1e670ce0e2
+      size: 84703
     - path: data/dataset/train_template.parquet
       hash: md5
-      md5: e5e2406916f73b15902f0d872cc7845e
-      size: 2564775
+      md5: 1919d98d48c94d1d72e8e111586326e1
+      size: 2566591
     - path: data/dataset/val_template.parquet
       hash: md5
-      md5: eeef50962423ca29694e702c3b5c6198
-      size: 231888
+      md5: 9a7067d0238a60589b0f8c86c9524eb8
+      size: 232084
     - path: results/dataset_build.json
       hash: md5
-      md5: afdbe7f9e63b1ae6d753027729bbe398
+      md5: 6f930b73a1ae8a2525acfbc756427097
       size: 2876
+  paraphrase:
+    cmd: uv run python -m sqlforge.paraphrase.ollama --model qwen3:8b --workers 
+      12
+    deps:
+    - path: data/dataset/test_in_template.parquet
+      hash: md5
+      md5: 4f74ad4620fde5e8bbb6eb5cff35b7df
+      size: 98457
+    - path: data/dataset/test_ood_template.parquet
+      hash: md5
+      md5: 24eac8378ff0620f8a0f2d1e670ce0e2
+      size: 84703
+    - path: data/dataset/train_template.parquet
+      hash: md5
+      md5: 1919d98d48c94d1d72e8e111586326e1
+      size: 2566591
+    - path: data/dataset/val_template.parquet
+      hash: md5
+      md5: 9a7067d0238a60589b0f8c86c9524eb8
+      size: 232084
+    - path: src/sqlforge/paraphrase
+      hash: md5
+      md5: ff8244fe1bc73638d7bf7688d557affd.dir
+      size: 29470
+      nfiles: 4
+    outs:
+    - path: data/dataset/test_in.parquet
+      hash: md5
+      md5: 95fecdb85f8672445e6c1fff98368b4a
+      size: 123084
+    - path: data/dataset/test_ood.parquet
+      hash: md5
+      md5: d1f3209ea99e138bd0a5422b50bb0690
+      size: 106624
+    - path: data/dataset/train.parquet
+      hash: md5
+      md5: e2ca4a5199d5cc97406ce949e3edda08
+      size: 2832097
+    - path: data/dataset/val.parquet
+      hash: md5
+      md5: 0e45037615b3002f83511da212711fdd
+      size: 257778
+    - path: data/paraphrase_cache.jsonl
+      hash: md5
+      md5: 4d65c5fff7878de62bdbf5e14faf13fd
+      size: 2916468
+    - path: results/paraphrase.json
+      hash: md5
+      md5: 9ce5005b311811f4eaceb38a5a74f028
+      size: 1085

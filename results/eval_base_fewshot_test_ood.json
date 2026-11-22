@@ -1,0 +1,146 @@
+{
+  "n": 1000,
+  "execution_accuracy": 0.839,
+  "valid_sql_rate": 0.937,
+  "select_only_rate": 0.994,
+  "error_taxonomy": {
+    "correct": 839,
+    "empty": 0,
+    "syntax": 6,
+    "not_select": 0,
+    "wrong_schema_ref": 57,
+    "exec_error": 0,
+    "timeout": 0,
+    "wrong_aggregate": 45,
+    "wrong_result": 53
+  },
+  "buckets": {
+    "joins": {
+      "0": {
+        "n": 770,
+        "execution_accuracy": 0.8545
+      },
+      "1": {
+        "n": 230,
+        "execution_accuracy": 0.787
+      }
+    },
+    "aggregation": {
+      "no": {
+        "n": 241,
+        "execution_accuracy": 0.8008
+      },
+      "yes": {
+        "n": 759,
+        "execution_accuracy": 0.8511
+      }
+    },
+    "group_by": {
+      "no": {
+        "n": 663,
+        "execution_accuracy": 0.8793
+      },
+      "yes": {
+        "n": 337,
+        "execution_accuracy": 0.7596
+      }
+    },
+    "subquery": {
+      "no": {
+        "n": 917,
+        "execution_accuracy": 0.8277
+      },
+      "yes": {
+        "n": 83,
+        "execution_accuracy": 0.9639
+      }
+    },
+    "lang": {
+      "de": {
+        "n": 512,
+        "execution_accuracy": 0.8086
+      },
+      "en": {
+        "n": 488,
+        "execution_accuracy": 0.8709
+      }
+    },
+    "db": {
+      "weather": {
+        "n": 1000,
+        "execution_accuracy": 0.839
+      }
+    },
+    "kind": {
+      "above_avg": {
+        "n": 24,
+        "execution_accuracy": 1.0
+      },
+      "agg": {
+        "n": 202,
+        "execution_accuracy": 0.8713
+      },
+      "count_all": {
+        "n": 3,
+        "execution_accuracy": 1.0
+      },
+      "count_distinct": {
+        "n": 45,
+        "execution_accuracy": 0.9778
+      },
+      "count_where": {
+        "n": 148,
+        "execution_accuracy": 0.9662
+      },
+      "group_agg": {
+        "n": 143,
+        "execution_accuracy": 0.7902
+      },
+      "group_count": {
+        "n": 33,
+        "execution_accuracy": 0.8485
+      },
+      "having": {
+        "n": 13,
+        "execution_accuracy": 0.7692
+      },
+      "in_subquery": {
+        "n": 59,
+        "execution_accuracy": 0.9492
+      },
+      "list_where": {
+        "n": 120,
+        "execution_accuracy": 0.625
+      },
+      "time_group": {
+        "n": 148,
+        "execution_accuracy": 0.7095
+      },
+      "topk": {
+        "n": 62,
+        "execution_accuracy": 1.0
+      }
+    },
+    "question_source": {
+      "paraphrase": {
+        "n": 791,
+        "execution_accuracy": 0.8458
+      },
+      "template": {
+        "n": 209,
+        "execution_accuracy": 0.8134
+      }
+    }
+  },
+  "tag": "base_fewshot",
+  "split": "test_ood",
+  "mode": "fewshot",
+  "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "adapter": null,
+  "n_shots": 3,
+  "decoding": "greedy, max_new_tokens=256",
+  "generation_seconds": 613.0,
+  "git_sha": "72e8c99358d241e9956d4142744346d9b5408a2d",
+  "limit": null,
+  "question_source_mode": "final"
+}

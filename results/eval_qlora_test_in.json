@@ -1,0 +1,155 @@
+{
+  "n": 1000,
+  "execution_accuracy": 0.995,
+  "valid_sql_rate": 1.0,
+  "select_only_rate": 1.0,
+  "error_taxonomy": {
+    "correct": 995,
+    "empty": 0,
+    "syntax": 0,
+    "not_select": 0,
+    "wrong_schema_ref": 0,
+    "exec_error": 0,
+    "timeout": 0,
+    "wrong_aggregate": 0,
+    "wrong_result": 5
+  },
+  "buckets": {
+    "joins": {
+      "0": {
+        "n": 648,
+        "execution_accuracy": 0.9969
+      },
+      "1": {
+        "n": 269,
+        "execution_accuracy": 0.9926
+      },
+      "2+": {
+        "n": 83,
+        "execution_accuracy": 0.988
+      }
+    },
+    "aggregation": {
+      "no": {
+        "n": 223,
+        "execution_accuracy": 0.9955
+      },
+      "yes": {
+        "n": 777,
+        "execution_accuracy": 0.9949
+      }
+    },
+    "group_by": {
+      "no": {
+        "n": 610,
+        "execution_accuracy": 0.9984
+      },
+      "yes": {
+        "n": 390,
+        "execution_accuracy": 0.9897
+      }
+    },
+    "subquery": {
+      "no": {
+        "n": 900,
+        "execution_accuracy": 0.9944
+      },
+      "yes": {
+        "n": 100,
+        "execution_accuracy": 1.0
+      }
+    },
+    "lang": {
+      "de": {
+        "n": 497,
+        "execution_accuracy": 0.994
+      },
+      "en": {
+        "n": 503,
+        "execution_accuracy": 0.996
+      }
+    },
+    "db": {
+      "smard": {
+        "n": 400,
+        "execution_accuracy": 0.995
+      },
+      "tpch": {
+        "n": 600,
+        "execution_accuracy": 0.995
+      }
+    },
+    "kind": {
+      "above_avg": {
+        "n": 36,
+        "execution_accuracy": 1.0
+      },
+      "agg": {
+        "n": 155,
+        "execution_accuracy": 1.0
+      },
+      "count_all": {
+        "n": 11,
+        "execution_accuracy": 1.0
+      },
+      "count_distinct": {
+        "n": 59,
+        "execution_accuracy": 1.0
+      },
+      "count_where": {
+        "n": 126,
+        "execution_accuracy": 1.0
+      },
+      "group_agg": {
+        "n": 187,
+        "execution_accuracy": 0.9893
+      },
+      "group_count": {
+        "n": 56,
+        "execution_accuracy": 0.9643
+      },
+      "having": {
+        "n": 36,
+        "execution_accuracy": 1.0
+      },
+      "in_subquery": {
+        "n": 64,
+        "execution_accuracy": 1.0
+      },
+      "list_where": {
+        "n": 90,
+        "execution_accuracy": 0.9889
+      },
+      "time_group": {
+        "n": 111,
+        "execution_accuracy": 1.0
+      },
+      "topk": {
+        "n": 69,
+        "execution_accuracy": 1.0
+      }
+    },
+    "question_source": {
+      "paraphrase": {
+        "n": 763,
+        "execution_accuracy": 0.9948
+      },
+      "template": {
+        "n": 237,
+        "execution_accuracy": 0.9958
+      }
+    }
+  },
+  "tag": "qlora",
+  "split": "test_in",
+  "mode": "zeroshot",
+  "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "adapter": "runs/qlora/adapter",
+  "n_shots": 0,
+  "decoding": "greedy, max_new_tokens=256",
+  "backend": "hf",
+  "generation_seconds": 400.5,
+  "git_sha": "98d8e1013374c8f20ff38af0b83556b9e3fa8f01",
+  "limit": null,
+  "question_source_mode": "final"
+}

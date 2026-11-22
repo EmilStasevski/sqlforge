@@ -21,7 +21,6 @@ jobs:
 
   rust:
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('rust/sqlnorm/Cargo.toml') != '' }}
     defaults:
       run:
         working-directory: rust/sqlnorm
@@ -35,7 +34,6 @@ jobs:
 
   go:
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('go/gateway/go.mod') != '' }}
     defaults:
       run:
         working-directory: go/gateway

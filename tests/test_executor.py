@@ -54,3 +54,18 @@ def test_consumer_parses_gateway_events():
     row = parse_event(raw)
     assert len(row) == len(COLUMNS) and row[3] == "hit_exact" and row[0].year == 2026
     assert parse_event(b"not json") is None
+
+
+def test_export_patches_rope_theta(tmp_path):
+    import json
+
+    pytest.importorskip("peft")
+    from sqlforge.serve.export import patch_legacy_config
+
+    p = tmp_path / "config.json"
+    p.write_text(
+        json.dumps({"dtype": "bfloat16", "rope_parameters": {"rope_theta": 1e6, "rope_type": "default"}})
+    )
+    patch_legacy_config(p)
+    cfg = json.loads(p.read_text())
+    assert cfg["rope_theta"] == 1e6 and cfg["torch_dtype"] == "bfloat16" and cfg["rope_scaling"] is None

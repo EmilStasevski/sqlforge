@@ -49,6 +49,7 @@ def main() -> None:
     ap.add_argument("--rank", type=int, default=16)
     ap.add_argument("--out", default="runs/qlora")
     ap.add_argument("--eval-samples", type=int, default=300)
+    ap.add_argument("--train-split", default="train", help="override for pipeline smoke tests only")
     args = ap.parse_args()
 
     random.seed(SEED)
@@ -64,11 +65,12 @@ def main() -> None:
     meta = {
         "base_model": args.model,
         "git_sha": git_sha,
-        "data_sha256": {s: sha256(DATA / f"{s}.parquet") for s in ("train", "val")},
+        "data_sha256": {s: sha256(DATA / f"{s}.parquet") for s in {args.train_split, "val"}},
+        "train_split": args.train_split,
         "seed": SEED,
     }
 
-    train_ds = Dataset.from_list(records("train")).shuffle(seed=SEED)
+    train_ds = Dataset.from_list(records(args.train_split)).shuffle(seed=SEED)
     eval_ds = Dataset.from_list(records("val", args.eval_samples))
     model, tok = load_base(args.model)
     torch.cuda.reset_peak_memory_stats()
@@ -132,7 +134,8 @@ def main() -> None:
         "versions": {p: version(p) for p in ("torch", "transformers", "peft", "trl", "bitsandbytes")},
     }
     (adapter_dir / "run_meta.json").write_text(json.dumps(res, indent=2))
-    Path("results/train_qlora.json").write_text(json.dumps(res, indent=2))
+    if args.train_split == "train" and args.max_steps < 0:  # only full runs produce a reportable result
+        Path("results/train_qlora.json").write_text(json.dumps(res, indent=2))
     print(json.dumps({k: v for k, v in res.items() if k != "config"}, indent=2))
 
 

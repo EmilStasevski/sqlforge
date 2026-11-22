@@ -26,9 +26,9 @@ from pydantic import BaseModel, Field
 from starlette.responses import Response
 
 from sqlforge.eval.score import extract_sql
+from sqlforge.prompt import SYSTEM_PROMPT
 from sqlforge.schemas import card as card_mod
 from sqlforge.schemas.variant import full_variant
-from sqlforge.train.qlora import SYSTEM_PROMPT
 from sqlforge.verify.execute import TIMEOUT_S, QueryTimeout
 
 DBS = ("tpch", "smard", "weather")

@@ -20,7 +20,8 @@ import polars as pl
 import torch
 
 from sqlforge.eval.score import Scorer, extract_sql, summarize
-from sqlforge.train.qlora import DEFAULT_BASE_MODEL, SYSTEM_PROMPT, load_base
+from sqlforge.prompt import SYSTEM_PROMPT
+from sqlforge.train.qlora import DEFAULT_BASE_MODEL, load_base
 
 DATA_DIR = Path("data/dataset")
 PRED_DIR = Path("data/eval")

@@ -6,8 +6,9 @@ import torch
 from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
+from sqlforge.prompt import SYSTEM_PROMPT  # noqa: F401  (re-exported)
+
 DEFAULT_BASE_MODEL = "Qwen/Qwen2.5-Coder-7B-Instruct"
-SYSTEM_PROMPT = "Return a single DuckDB SELECT statement."
 
 
 def bnb_config() -> BitsAndBytesConfig:

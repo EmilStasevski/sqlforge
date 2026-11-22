@@ -1,5 +1,7 @@
 # sqlforge: German/English text-to-SQL, QLoRA-tuned on execution-verified synthetic data
 
+[![ci](https://github.com/EmilStasevski/sqlforge/actions/workflows/ci.yml/badge.svg)](https://github.com/EmilStasevski/sqlforge/actions/workflows/ci.yml)
+
 sqlforge fine-tunes a 7B code model (Qwen2.5-Coder-7B-Instruct, 4-bit NF4 QLoRA on one 16 GB GPU) to answer
 German and English questions with DuckDB SQL. **Every training label is checked by running it.** Nothing in
 the dataset was labelled or checked by hand. The model is evaluated by **execution accuracy** on a database

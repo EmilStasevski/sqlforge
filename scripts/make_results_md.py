@@ -187,6 +187,12 @@ def update_readme(evals: dict) -> None:
                 f"| with Redis cache | {b['latency_ms']['50th']} ms | {b['latency_ms']['95th']} ms | "
                 f"{pct(b['hit_rate'])} |",
                 "",
+                f"{lt['requests_per_run']} requests per run at {a['rate_per_s']}/s: "
+                f"{lt['distinct_questions']} distinct "
+                f"test_ood questions x {lt['repeat']}, 30 % of repeats as case/whitespace variants "
+                f"(max possible hit rate {pct(lt['max_possible_hit_rate'])}); "
+                "gateway -> executor -> GGUF on one GPU.",
+                "",
             ]
     tr = load("train_qlora.json")
     if tr:

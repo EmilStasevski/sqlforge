@@ -35,6 +35,8 @@ n = 1000 questions per split (about half German), greedy decoding, execution acc
 | without Redis cache | 846.6 ms | 1762.1 ms | - |
 | with Redis cache | 1.9 ms | 1049.8 ms | 77.8 % |
 
+600 requests per run at 2/s: 120 distinct test_ood questions x 5, 30 % of repeats as case/whitespace variants (max possible hit rate 80.0 %); gateway -> executor -> GGUF on one GPU.
+
 Training: 12000 samples, 1 epoch, 1.8 h on an RTX 5060 Ti 16 GB, peak VRAM 6.1 GiB.
 
 Rust `sqlnorm` (parse + canonicalise + hash): **18.0x** faster than sqlglot on 15,000 queries.

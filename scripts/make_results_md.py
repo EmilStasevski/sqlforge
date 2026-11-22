@@ -130,6 +130,61 @@ def main() -> None:
         out.append("")
     Path("docs/results.md").write_text("\n".join(out))
     print("wrote docs/results.md")
+    update_readme(evals)
+
+
+def update_readme(evals: dict) -> None:
+    """Headline tables between the README markers."""
+    lines = []
+    if evals:
+        lines += [
+            "| Model (Qwen2.5-Coder-7B, 4-bit) | test_in EX | test_ood EX (unseen schema) |",
+            "|---|---|---|",
+        ]
+        names = {"base_zeroshot": "base, zero-shot", "base_fewshot": "base, 3-shot", "qlora": "QLoRA (ours)"}
+        for t in [t for t in TAG_ORDER if any(k[0] == t for k in evals)]:
+            a, b = evals.get((t, "test_in")), evals.get((t, "test_ood"))
+            fmt = [pct(x["execution_accuracy"]) if x else "TODO(measure)" for x in (a, b)]
+            lines.append(f"| {names.get(t, t)} | {fmt[0]} | {fmt[1]} |")
+        lines += [
+            "",
+            "n = 1000 questions per split (about half German), greedy decoding, execution accuracy = "
+            "result-set equality.",
+            "",
+        ]
+    lt = load("loadtest.json")
+    if lt:
+        a, b = lt["runs"].get("no_cache"), lt["runs"].get("with_cache")
+        if a and b:
+            lines += [
+                "| Serving (vegeta, same request stream) | p50 | p95 | cache hit rate |",
+                "|---|---|---|---|",
+                f"| without Redis cache | {a['latency_ms']['50th']} ms | {a['latency_ms']['95th']} ms | - |",
+                f"| with Redis cache | {b['latency_ms']['50th']} ms | {b['latency_ms']['95th']} ms | "
+                f"{pct(b['hit_rate'])} |",
+                "",
+            ]
+    bench = load("bench_sqlnorm.json")
+    if bench:
+        lines += [
+            f"Rust `sqlnorm` (parse + canonicalise + hash): **{bench['speedup_vs_sqlglot']['per_call']}x** "
+            f"faster than sqlglot on {bench['n_queries']:,} queries.",
+            "",
+        ]
+    ds = load("dataset_build.json")
+    if ds:
+        n = {s: d["n"] for s, d in ds["splits"].items()}
+        lines += [
+            f"Dataset: {n.get('train')} train / {n.get('val')} val / {n.get('test_in')} test_in / "
+            f"{n.get('test_ood')} test_ood, all execution-verified.",
+            "",
+        ]
+    readme = Path("README.md")
+    txt = readme.read_text()
+    start, end = "<!-- results:start -->", "<!-- results:end -->"
+    i, j = txt.index(start) + len(start), txt.index(end)
+    readme.write_text(txt[:i] + "\n" + "\n".join(lines) + "\n" + txt[j:])
+    print("updated README.md results section")
 
 
 if __name__ == "__main__":

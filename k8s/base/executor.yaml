@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: executor, labels: {app: executor}}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: executor}}
+  template:
+    metadata: {labels: {app: executor}}
+    spec:
+      containers:
+        - name: executor
+          image: sqlforge-py:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 8000}]
+          envFrom: [{configMapRef: {name: sqlforge-config}}]
+          volumeMounts: [{name: duckdb, mountPath: /data/db, readOnly: true}]
+          resources: {requests: {cpu: 100m, memory: 256Mi}, limits: {memory: 2Gi}}
+          readinessProbe: {httpGet: {path: /health, port: 8000}, periodSeconds: 5}
+          livenessProbe: {httpGet: {path: /health, port: 8000}, periodSeconds: 20}
+      volumes:
+        - name: duckdb
+          hostPath: {path: /data/db, type: Directory}   # kind: mounted from ./data/db (see kind-config.yaml)
+---
+apiVersion: v1
+kind: Service
+metadata: {name: executor}
+spec:
+  selector: {app: executor}
+  ports: [{port: 8000, targetPort: 8000}]

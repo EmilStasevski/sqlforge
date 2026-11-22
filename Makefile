@@ -1,4 +1,4 @@
-.PHONY: gguf artifacts eval-qlora env-check data data-push data-schemas smoke train eval eval-baseline results-md serve up down test lint bench loadtest
+.PHONY: kind-up kind-down gguf artifacts eval-qlora env-check data data-push data-schemas smoke train eval eval-baseline results-md serve up down test lint bench loadtest
 
 PY := uv run python
 
@@ -59,6 +59,12 @@ serve up:
 
 down:
 	docker compose down
+
+kind-up:
+	./scripts/kind_deploy.sh
+
+kind-down:
+	~/go/bin/kind delete cluster --name sqlforge
 
 loadtest:
 	$(PY) scripts/loadtest.py

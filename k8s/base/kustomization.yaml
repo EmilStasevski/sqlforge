@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: [redis.yaml, executor.yaml, gateway.yaml]
+configMapGenerator:
+  - name: sqlforge-config
+    literals:
+      - REDIS_ADDR=redis:6379
+      - EXECUTOR_URL=http://executor:8000
+      - CACHE_ENABLED=true
+      - CACHE_TTL=1h
+      - DB_DIR=/data/db
+      - MODEL_NAME=sqlforge
+      - MODEL_URL=http://model-server:11434/v1

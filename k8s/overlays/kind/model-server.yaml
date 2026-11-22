@@ -1,0 +1,16 @@
+# kind has no GPU: the model server stays the GPU Ollama from docker compose (host port 11435).
+# This selector-less Service + EndpointSlice routes `model-server:11434` to the kind network gateway (the host).
+apiVersion: v1
+kind: Service
+metadata: {name: model-server}
+spec:
+  ports: [{name: http, port: 11434, targetPort: 11435}]
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: model-server-host
+  labels: {kubernetes.io/service-name: model-server}
+addressType: IPv4
+ports: [{name: http, port: 11435}]
+endpoints: [{addresses: ["HOST_GATEWAY_IP"]}]

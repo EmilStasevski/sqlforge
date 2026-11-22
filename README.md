@@ -25,8 +25,11 @@ client ─► Go gateway :8080 ── Redis (exact + normalized-question cache, 
 |---|---|---|
 | base, zero-shot | 83.0 % | 89.6 % |
 | base, 3-shot | 80.7 % | 83.9 % |
+| QLoRA (ours) | 99.5 % | 95.0 % |
 
 n = 1000 questions per split (about half German), greedy decoding, execution accuracy = result-set equality.
+
+Training: 12000 samples, 1 epoch, 1.8 h on an RTX 5060 Ti 16 GB, peak VRAM 6.1 GiB.
 
 Rust `sqlnorm` (parse + canonicalise + hash): **18.0x** faster than sqlglot on 15,000 queries.
 

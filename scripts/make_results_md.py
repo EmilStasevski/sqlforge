@@ -118,6 +118,25 @@ def main() -> None:
             f"(sqlglot {bench['env']['sqlglot']}, Rust tokenizer: {bench['env']['sqlglot_rust_tokenizer']}).",
             "",
         ]
+    tr = load("train_qlora.json")
+    if tr:
+        out += [
+            "## QLoRA training run",
+            "",
+            f"{tr['base_model']}, {tr['train_samples']} samples, {tr['epochs']} epoch ({tr['steps']} steps), "
+            f"LoRA r={tr['lora']['r']} alpha={tr['lora']['alpha']}: {tr['train_seconds'] / 3600:.2f} h "
+            f"on one 16 GB GPU, peak VRAM {tr['peak_vram_allocated_gib']} GiB, "
+            f"{tr['seconds_per_step']} s/step.",
+            "",
+            "| step | eval loss |",
+            "|---|---|",
+        ]
+        seen = set()
+        for step, loss in tr["eval_loss_curve"]:
+            if step not in seen:
+                seen.add(step)
+                out.append(f"| {step} | {loss} |")
+        out.append("")
     smoke = [load(f) for f in ("smoke_7b_short.json", "smoke_7b_seq1024.json")]
     if any(smoke):
         out += ["## QLoRA smoke test", "", "| tokens/sample | peak VRAM (GiB) | s/step |", "|---|---|---|"]
@@ -164,6 +183,14 @@ def update_readme(evals: dict) -> None:
                 f"{pct(b['hit_rate'])} |",
                 "",
             ]
+    tr = load("train_qlora.json")
+    if tr:
+        lines += [
+            f"Training: {tr['train_samples']} samples, {tr['epochs']:.0f} epoch, "
+            f"{tr['train_seconds'] / 3600:.1f} h on an RTX 5060 Ti 16 GB, "
+            f"peak VRAM {tr['peak_vram_allocated_gib']} GiB.",
+            "",
+        ]
     bench = load("bench_sqlnorm.json")
     if bench:
         lines += [

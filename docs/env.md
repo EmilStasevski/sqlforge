@@ -53,9 +53,15 @@ Values copied from `results/smoke_7b_*.json`.
   reads the legacy top-level `rope_theta`, gets freq_base=0 and the runner aborts (SIGABRT) on first request.
   `serve/export.py` writes the legacy keys. Ollama also does not take the chat template from safetensors, so the
   Modelfile sets the Qwen ChatML template and stop tokens explicitly.
-- `ollama create -q q4_K_M` from bf16 safetensors needs a lot of RAM; running it next to a loaded 8B model got the
-  host Ollama OOM-killed once (paraphrase requests in flight fell back to templates and were retried; failures are
-  never cached).
+- **Do not let Ollama convert safetensors.** `ollama create -q q4_K_M` from the merged bf16 safetensors (7B, 15 GB)
+  peaked at 29.9 GB RSS in the Ollama 0.13.5 server and was killed by the kernel OOM killer on a 31 GB host (kernel
+  log: `Killed process ... (ollama) anon-rss:29913788kB`). `serve/export.py` therefore converts with llama.cpp's
+  `convert_hf_to_gguf.py` (tag v1.0.0, lazy tensors, 3.9 GB peak RSS, needs `sentencepiece`) to an F16 GGUF and
+  lets Ollama only quantize GGUF -> Q4_K_M (17.8 GB peak RSS). Before that, an earlier run next to a loaded 8B
+  model had also OOM-killed the host Ollama (paraphrase requests in flight fell back to templates and were
+  retried; failures are never cached).
+- `pgrep -f <pattern>` inside a shell whose command line contains the same pattern matches that shell; wait on the
+  PID of the actual python process (`ps -eo pid,args`) instead.
 - Docker bridge DNS does not resolve on this host (router at 192.168.0.1 ignores the bridge subnet), so image
   builds use `network: host` and the Grafana ClickHouse plugin (4.23.5) is baked into the image.
 - kind 0.29: `kind load docker-image` fails on multi-arch images ("content digest ... not found"); the deploy script

@@ -71,6 +71,22 @@ def generate(model, tok, prompts: list[str], batch_size: int, max_new_tokens: in
     return out
 
 
+def generate_openai(base_url: str, model: str, messages: list[list[dict]], workers: int = 4) -> list[str]:
+    """Generate via an OpenAI-compatible server (served GGUF through Ollama / llama.cpp)."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    import requests
+
+    def one(msgs: list[dict]) -> str:
+        body = {"model": model, "messages": msgs, "temperature": 0, "max_tokens": 256}
+        r = requests.post(f"{base_url}/chat/completions", json=body, timeout=300)
+        r.raise_for_status()
+        return r.json()["choices"][0]["message"]["content"]
+
+    with ThreadPoolExecutor(workers) as ex:
+        return list(ex.map(one, messages))
+
+
 def git_sha() -> str:
     try:
         return subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
@@ -87,6 +103,9 @@ def main() -> None:
     ap.add_argument("--splits", nargs="*", default=["test_in", "test_ood"])
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--batch-size", type=int, default=16)
+    ap.add_argument("--backend", choices=["hf", "openai"], default="hf")
+    ap.add_argument("--openai-url", default="http://localhost:11435/v1")
+    ap.add_argument("--served-model", default="sqlforge")
     ap.add_argument(
         "--source",
         choices=["final", "template"],
@@ -96,13 +115,14 @@ def main() -> None:
     args = ap.parse_args()
 
     torch.manual_seed(0)
-    model, tok = load_base(args.model)
-    if args.adapter:
-        from peft import PeftModel
+    if args.backend == "hf":
+        model, tok = load_base(args.model)
+        if args.adapter:
+            from peft import PeftModel
 
-        model = PeftModel.from_pretrained(model, args.adapter)
-    model.eval()
-    model.config.use_cache = True
+            model = PeftModel.from_pretrained(model, args.adapter)
+        model.eval()
+        model.config.use_cache = True
     shots = fewshot_examples() if args.mode == "fewshot" else []
     scorer = Scorer()
     PRED_DIR.mkdir(parents=True, exist_ok=True)
@@ -117,12 +137,17 @@ def main() -> None:
         if args.limit:
             df = df.head(args.limit)
         rows = df.to_dicts()
-        prompts = [
-            tok.apply_chat_template(build_messages(r, shots), tokenize=False, add_generation_prompt=True)
-            for r in rows
-        ]
         t0 = time.time()
-        outputs = generate(model, tok, prompts, args.batch_size)
+        if args.backend == "openai":
+            outputs = generate_openai(
+                args.openai_url, args.served_model, [build_messages(r, shots) for r in rows]
+            )
+        else:
+            prompts = [
+                tok.apply_chat_template(build_messages(r, shots), tokenize=False, add_generation_prompt=True)
+                for r in rows
+            ]
+            outputs = generate(model, tok, prompts, args.batch_size)
         gen_s = time.time() - t0
         for r, o in zip(rows, outputs, strict=True):
             r["raw_output"] = o
@@ -138,6 +163,7 @@ def main() -> None:
                 "adapter": args.adapter,
                 "n_shots": len(shots),
                 "decoding": "greedy, max_new_tokens=256",
+                "backend": args.backend if args.backend == "hf" else f"openai:{args.served_model}",
                 "generation_seconds": round(gen_s, 1),
                 "git_sha": git_sha(),
                 "limit": args.limit,

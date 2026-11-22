@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 R = Path("results")
-TAG_ORDER = ["base_zeroshot", "base_fewshot", "qlora"]
+TAG_ORDER = ["base_zeroshot", "base_fewshot", "qlora", "qlora_gguf"]
 
 
 def load(name: str) -> dict | None:
@@ -160,7 +160,12 @@ def update_readme(evals: dict) -> None:
             "| Model (Qwen2.5-Coder-7B, 4-bit) | test_in EX | test_ood EX (unseen schema) |",
             "|---|---|---|",
         ]
-        names = {"base_zeroshot": "base, zero-shot", "base_fewshot": "base, 3-shot", "qlora": "QLoRA (ours)"}
+        names = {
+            "base_zeroshot": "base, zero-shot",
+            "base_fewshot": "base, 3-shot",
+            "qlora": "QLoRA (ours), NF4 + adapter",
+            "qlora_gguf": "QLoRA merged, GGUF Q4_K_M (served by Ollama)",
+        }
         for t in [t for t in TAG_ORDER if any(k[0] == t for k in evals)]:
             a, b = evals.get((t, "test_in")), evals.get((t, "test_ood"))
             fmt = [pct(x["execution_accuracy"]) if x else "TODO(measure)" for x in (a, b)]

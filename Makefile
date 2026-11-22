@@ -1,4 +1,4 @@
-.PHONY: kind-up kind-down gguf artifacts eval-qlora env-check data data-push data-schemas smoke train eval eval-baseline results-md serve up down test lint bench loadtest
+.PHONY: register kind-up kind-down gguf artifacts eval-qlora env-check data data-push data-schemas smoke train eval eval-baseline results-md serve up down test lint bench loadtest
 
 PY := uv run python
 
@@ -38,6 +38,9 @@ eval-baseline:
 eval-qlora:
 	$(PY) -m sqlforge.eval.run --tag qlora --adapter runs/qlora/adapter
 	$(PY) scripts/make_results_md.py
+
+register:
+	$(PY) scripts/register_model.py
 
 eval: eval-baseline eval-qlora
 

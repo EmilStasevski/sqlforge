@@ -49,6 +49,17 @@ Values copied from `results/smoke_7b_*.json`.
   S3-API artifact store.
 
 ## Gotchas
+- **transformers 5 + GGUF:** merged checkpoints store `rope_parameters.rope_theta`; Ollama's safetensors importer
+  reads the legacy top-level `rope_theta`, gets freq_base=0 and the runner aborts (SIGABRT) on first request.
+  `serve/export.py` writes the legacy keys. Ollama also does not take the chat template from safetensors, so the
+  Modelfile sets the Qwen ChatML template and stop tokens explicitly.
+- `ollama create -q q4_K_M` from bf16 safetensors needs a lot of RAM; running it next to a loaded 8B model got the
+  host Ollama OOM-killed once (paraphrase requests in flight fell back to templates and were retried; failures are
+  never cached).
+- Docker bridge DNS does not resolve on this host (router at 192.168.0.1 ignores the bridge subnet), so image
+  builds use `network: host` and the Grafana ClickHouse plugin (4.23.5) is baked into the image.
+- kind 0.29: `kind load docker-image` fails on multi-arch images ("content digest ... not found"); the deploy script
+  imports via `ctr images import` for the current platform. The kind network is dual-stack: pick the IPv4 gateway.
 - transformers 5: `apply_chat_template(tokenize=True)` returns a dict, not a list of ids.
 - DuckDB opens one thread pool per connection; 8 worker processes x many cached connections hit the OS thread
   limit ("can't start new thread"). Fix: `SET threads = 2` per connection and at most 8 cached variant connections.

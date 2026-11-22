@@ -93,6 +93,9 @@ make up                        # gateway, executor, Ollama, Redis, Kafka, ClickH
 curl -s localhost:8080/ask -d '{"question":"Wie viele Tage mit mehr als 20 mm Niederschlag gab es 2024 in Köln?","db":"weather"}'
 make loadtest                  # vegeta, Redis cache on vs off
 make test bench                # pytest + sqlnorm vs sqlglot benchmark
+make register artifacts        # MLflow model registry (sqlforge-qlora); adapter/GGUF/eval reports -> MinIO
+make kind-up                   # optional: gateway/executor/redis on kind via kustomize -> localhost:18080/ask
+uv run --group demo streamlit run src/sqlforge/serve/demo.py   # optional: Streamlit UI over the gateway
 ```
 
 Grafana: http://localhost:3000 (dashboard "sqlforge serving"). MLflow: `uv run mlflow ui --backend-store-uri sqlite:///mlflow.db`.
@@ -111,7 +114,9 @@ Grafana: http://localhost:3000 (dashboard "sqlforge serving"). MLflow: `uv run m
 | `rust/sqlnorm` | sqlparser-rs + PyO3: `is_safe_select`, `normalize`, `canonical_hash`, `features` |
 | `go/gateway` | Redis cache + rate limit, Prometheus, Kafka producer |
 | `dbt/smard` | dbt-duckdb models and tests for the SMARD marts |
-| `docs/env.md` | verified versions and Blackwell / transformers-5 notes |
+| `k8s/` | kustomize base (gateway, executor, redis) + kind overlay (model server via EndpointSlice) |
+| `docs/env.md` | verified versions and Blackwell / transformers-5 / GGUF export notes |
+| `docs/results.md`, `docs/cv.md` | full results and CV text, both generated from `results/*.json` |
 
 ## Kurzfassung (DE)
 

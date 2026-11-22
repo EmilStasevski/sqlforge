@@ -1,0 +1,154 @@
+{
+  "n": 1000,
+  "execution_accuracy": 0.807,
+  "valid_sql_rate": 0.932,
+  "select_only_rate": 0.995,
+  "error_taxonomy": {
+    "correct": 807,
+    "empty": 0,
+    "syntax": 5,
+    "not_select": 0,
+    "wrong_schema_ref": 63,
+    "exec_error": 0,
+    "timeout": 0,
+    "wrong_aggregate": 9,
+    "wrong_result": 116
+  },
+  "buckets": {
+    "joins": {
+      "0": {
+        "n": 648,
+        "execution_accuracy": 0.8704
+      },
+      "1": {
+        "n": 269,
+        "execution_accuracy": 0.7546
+      },
+      "2+": {
+        "n": 83,
+        "execution_accuracy": 0.4819
+      }
+    },
+    "aggregation": {
+      "no": {
+        "n": 223,
+        "execution_accuracy": 0.9058
+      },
+      "yes": {
+        "n": 777,
+        "execution_accuracy": 0.7786
+      }
+    },
+    "group_by": {
+      "no": {
+        "n": 610,
+        "execution_accuracy": 0.9016
+      },
+      "yes": {
+        "n": 390,
+        "execution_accuracy": 0.659
+      }
+    },
+    "subquery": {
+      "no": {
+        "n": 900,
+        "execution_accuracy": 0.8011
+      },
+      "yes": {
+        "n": 100,
+        "execution_accuracy": 0.86
+      }
+    },
+    "lang": {
+      "de": {
+        "n": 497,
+        "execution_accuracy": 0.7505
+      },
+      "en": {
+        "n": 503,
+        "execution_accuracy": 0.8628
+      }
+    },
+    "db": {
+      "smard": {
+        "n": 400,
+        "execution_accuracy": 0.835
+      },
+      "tpch": {
+        "n": 600,
+        "execution_accuracy": 0.7883
+      }
+    },
+    "kind": {
+      "above_avg": {
+        "n": 36,
+        "execution_accuracy": 0.8889
+      },
+      "agg": {
+        "n": 155,
+        "execution_accuracy": 0.8516
+      },
+      "count_all": {
+        "n": 11,
+        "execution_accuracy": 0.9091
+      },
+      "count_distinct": {
+        "n": 59,
+        "execution_accuracy": 0.9492
+      },
+      "count_where": {
+        "n": 126,
+        "execution_accuracy": 0.9365
+      },
+      "group_agg": {
+        "n": 187,
+        "execution_accuracy": 0.6203
+      },
+      "group_count": {
+        "n": 56,
+        "execution_accuracy": 0.7679
+      },
+      "having": {
+        "n": 36,
+        "execution_accuracy": 0.8056
+      },
+      "in_subquery": {
+        "n": 64,
+        "execution_accuracy": 0.8438
+      },
+      "list_where": {
+        "n": 90,
+        "execution_accuracy": 0.8889
+      },
+      "time_group": {
+        "n": 111,
+        "execution_accuracy": 0.6216
+      },
+      "topk": {
+        "n": 69,
+        "execution_accuracy": 0.9855
+      }
+    },
+    "question_source": {
+      "paraphrase": {
+        "n": 763,
+        "execution_accuracy": 0.7995
+      },
+      "template": {
+        "n": 237,
+        "execution_accuracy": 0.8312
+      }
+    }
+  },
+  "tag": "base_fewshot",
+  "split": "test_in",
+  "mode": "fewshot",
+  "model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "adapter": null,
+  "n_shots": 3,
+  "decoding": "greedy, max_new_tokens=256",
+  "generation_seconds": 809.4,
+  "git_sha": "d5c2fbd35531f1b0e5333b8c5c0a37d161c14ce3",
+  "limit": null,
+  "question_source_mode": "final"
+}

@@ -1,0 +1,8 @@
+{
+  "adapter": "runs/qlora/adapter",
+  "base": "Qwen/Qwen2.5-Coder-7B-Instruct",
+  "gguf": "runs/serve/sqlforge-q4_k_m.gguf",
+  "quant": "Q4_K_M",
+  "gguf_bytes": 4683073664,
+  "gguf_sha256": "0bef4256e11e5c7360051300199a5c728819b526b5145f87f09c4371cb0a5a5b"
+}

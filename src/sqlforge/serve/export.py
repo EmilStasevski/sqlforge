@@ -1,7 +1,10 @@
 """Merge the QLoRA adapter into the bf16 base, quantize to GGUF Q4_K_M via Ollama, export for serving.
 
 Steps: base (bf16, CPU) + adapter -> merge_and_unload -> runs/merged (safetensors)
-       -> `ollama create <name> -q q4_K_M` (host Ollama) -> copy the GGUF blob + Modelfile to runs/serve/
+       -> llama.cpp convert_hf_to_gguf.py (pinned tag, lazy tensors, ~4 GB RAM) -> F16 GGUF
+       -> `ollama create <name> -q q4_K_M` from the F16 GGUF (host Ollama, ~18 GB RAM peak)
+       -> copy the quantized blob + Modelfile to runs/serve/
+Ollama's own safetensors converter is not used: on a 7B bf16 model it peaked at ~30 GB RSS and was OOM-killed.
 The compose `ollama` service registers runs/serve/Modelfile as model "sqlforge" on start.
 
 Usage: uv run python -m sqlforge.serve.export --adapter runs/qlora/adapter [--name sqlforge]
@@ -12,9 +15,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import torch
@@ -61,6 +66,44 @@ def patch_legacy_config(path: Path) -> None:
     path.write_text(json.dumps(cfg, indent=2))
 
 
+LLAMA_CPP_TAG = "v1.0.0"  # b1b770d90d94cad9e9ea5b993bdbc383a522fb28
+LLAMA_CPP_DIR = Path(os.environ.get("LLAMA_CPP_DIR", Path.home() / ".cache/sqlforge/llama.cpp"))
+
+
+def convert_f16(merged: Path) -> Path:
+    """safetensors -> F16 GGUF with llama.cpp's converter (needs only its gguf-py, no build)."""
+    if not LLAMA_CPP_DIR.exists():
+        LLAMA_CPP_DIR.parent.mkdir(parents=True, exist_ok=True)
+        run(
+            [
+                "git",
+                "clone",
+                "-q",
+                "--depth",
+                "1",
+                "--branch",
+                LLAMA_CPP_TAG,
+                "https://github.com/ggml-org/llama.cpp",
+                str(LLAMA_CPP_DIR),
+            ]
+        )
+    out = merged / "model-f16.gguf"
+    env = {**os.environ, "PYTHONPATH": str(LLAMA_CPP_DIR / "gguf-py")}
+    run(
+        [
+            sys.executable,
+            str(LLAMA_CPP_DIR / "convert_hf_to_gguf.py"),
+            str(merged),
+            "--outtype",
+            "f16",
+            "--outfile",
+            str(out),
+        ],
+        env=env,
+    )
+    return out
+
+
 def run(cmd: list[str], **kw) -> str:
     return subprocess.run(cmd, check=True, capture_output=True, text=True, **kw).stdout
 
@@ -79,7 +122,8 @@ def main() -> None:
     if not args.skip_merge:
         merge(Path(args.adapter), merged, args.base)
     patch_legacy_config(merged / "config.json")
-    (merged / "Modelfile").write_text(f"FROM {merged}\n{MODELFILE_TAIL}")
+    f16 = convert_f16(merged)
+    (merged / "Modelfile").write_text(f"FROM {f16}\n{MODELFILE_TAIL}")
     run(["ollama", "create", args.name, "-q", "q4_K_M", "-f", str(merged / "Modelfile")])
 
     modelfile = run(["ollama", "show", "--modelfile", args.name])
@@ -101,6 +145,7 @@ def main() -> None:
         "gguf_sha256": sha,
     }
     (serve / "export.json").write_text(json.dumps(meta, indent=2))
+    Path("results/export_gguf.json").write_text(json.dumps(meta, indent=2))
     print(json.dumps(meta, indent=2))
 
 

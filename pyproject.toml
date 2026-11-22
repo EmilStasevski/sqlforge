@@ -33,6 +33,7 @@ train = [
     "datasets>=3.0",
     "mlflow>=2.17",
     "wandb>=0.18",
+    "sentencepiece>=0.2.3",
 ]
 
 [tool.uv]

@@ -1,4 +1,4 @@
-.PHONY: env-check data data-push data-schemas smoke train eval eval-baseline results-md serve up down test lint bench loadtest
+.PHONY: gguf artifacts eval-qlora env-check data data-push data-schemas smoke train eval eval-baseline results-md serve up down test lint bench loadtest
 
 PY := uv run python
 
@@ -21,15 +21,25 @@ smoke:
 	$(PY) -m sqlforge.train.smoke --pad-to-max --out results/smoke_7b_seq1024.json
 
 train:
-	@echo "TODO(day4)"; exit 1
+	$(PY) -m sqlforge.train.run --epochs 1
+
+gguf:
+	$(PY) -m sqlforge.serve.export --adapter runs/qlora/adapter
+
+artifacts:
+	docker compose up -d minio
+	$(PY) scripts/push_artifacts.py
 
 eval-baseline:
 	$(PY) -m sqlforge.eval.run --tag base_zeroshot --mode zeroshot
 	$(PY) -m sqlforge.eval.run --tag base_fewshot --mode fewshot
 	$(PY) scripts/make_results_md.py
 
-eval: eval-baseline
-	@echo "TODO(day5): QLoRA adapter eval"
+eval-qlora:
+	$(PY) -m sqlforge.eval.run --tag qlora --adapter runs/qlora/adapter
+	$(PY) scripts/make_results_md.py
+
+eval: eval-baseline eval-qlora
 
 results-md:
 	$(PY) scripts/make_results_md.py
@@ -45,10 +55,10 @@ bench:
 	$(PY) scripts/bench_sqlnorm.py
 
 serve up:
-	docker compose up -d
+	docker compose up -d --build
 
 down:
 	docker compose down
 
 loadtest:
-	@echo "TODO(day6): vegeta"; exit 1
+	$(PY) scripts/loadtest.py

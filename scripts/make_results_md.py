@@ -199,27 +199,43 @@ def write_cv(evals: dict) -> None:
     print("wrote docs/cv.md")
 
 
-def update_readme(evals: dict) -> None:
-    """Headline tables between the README markers."""
-    lines = []
+def readme_lines(evals: dict, de: bool) -> list[str]:
+    """Headline tables for README.md (de=False) or README.de.md (de=True)."""
+    todo = "TODO(measure)"
+
+    def p(x: float) -> str:
+        return de_num(100 * x) + " %" if de else pct(x)
+
+    def ms(x: float) -> str:
+        return (de_num(x) if de else f"{x}") + " ms"
+
+    lines: list[str] = []
     if evals:
+        names = {
+            "base_zeroshot": ("base, zero-shot", "Basismodell, zero-shot"),
+            "base_fewshot": ("base, 3-shot", "Basismodell, 3-shot"),
+            "qlora": ("QLoRA (ours), NF4 + adapter", "QLoRA (dieses Projekt), NF4 + Adapter"),
+            "qlora_gguf": (
+                "QLoRA merged, GGUF Q4_K_M (served by Ollama)",
+                "QLoRA gemergt, GGUF Q4_K_M (Serving über Ollama)",
+            ),
+        }
         lines += [
-            "| Model (Qwen2.5-Coder-7B, 4-bit) | test_in EX | test_ood EX (unseen schema) |",
+            "| Modell (Qwen2.5-Coder-7B, 4-bit) | test_in EX | test_ood EX (unbekanntes Schema) |"
+            if de
+            else "| Model (Qwen2.5-Coder-7B, 4-bit) | test_in EX | test_ood EX (unseen schema) |",
             "|---|---|---|",
         ]
-        names = {
-            "base_zeroshot": "base, zero-shot",
-            "base_fewshot": "base, 3-shot",
-            "qlora": "QLoRA (ours), NF4 + adapter",
-            "qlora_gguf": "QLoRA merged, GGUF Q4_K_M (served by Ollama)",
-        }
         for t in [t for t in TAG_ORDER if any(k[0] == t for k in evals)]:
             a, b = evals.get((t, "test_in")), evals.get((t, "test_ood"))
-            fmt = [pct(x["execution_accuracy"]) if x else "TODO(measure)" for x in (a, b)]
-            lines.append(f"| {names.get(t, t)} | {fmt[0]} | {fmt[1]} |")
+            fmt = [p(x["execution_accuracy"]) if x else todo for x in (a, b)]
+            lines.append(f"| {names.get(t, (t, t))[de]} | {fmt[0]} | {fmt[1]} |")
         lines += [
             "",
-            "n = 1000 questions per split (about half German), greedy decoding, execution accuracy = "
+            "n = 1000 Fragen pro Split (etwa die Hälfte auf Deutsch), Greedy-Decoding, Execution Accuracy = "
+            "Gleichheit der Ergebnismengen."
+            if de
+            else "n = 1000 questions per split (about half German), greedy decoding, execution accuracy = "
             "result-set equality.",
             "",
         ]
@@ -227,49 +243,84 @@ def update_readme(evals: dict) -> None:
     if lt:
         a, b = lt["runs"].get("no_cache"), lt["runs"].get("with_cache")
         if a and b:
-            lines += [
-                "| Serving (vegeta, same request stream) | p50 | p95 | cache hit rate |",
-                "|---|---|---|---|",
-                f"| without Redis cache | {a['latency_ms']['50th']} ms | {a['latency_ms']['95th']} ms | - |",
-                f"| with Redis cache | {b['latency_ms']['50th']} ms | {b['latency_ms']['95th']} ms | "
-                f"{pct(b['hit_rate'])} |",
-                "",
-                f"{lt['requests_per_run']} requests per run at {a['rate_per_s']}/s: "
-                f"{lt['distinct_questions']} distinct "
-                f"test_ood questions x {lt['repeat']}, 30 % of repeats as case/whitespace variants "
-                f"(max possible hit rate {pct(lt['max_possible_hit_rate'])}); "
-                "gateway -> executor -> GGUF on one GPU.",
-                "",
-            ]
+            la, lb = a["latency_ms"], b["latency_ms"]
+            if de:
+                lines += [
+                    "| Serving (vegeta, gleicher Request-Strom) | p50 | p95 | Cache-Trefferquote |",
+                    "|---|---|---|---|",
+                    f"| ohne Redis-Cache | {ms(la['50th'])} | {ms(la['95th'])} | - |",
+                    f"| mit Redis-Cache | {ms(lb['50th'])} | {ms(lb['95th'])} | {p(b['hit_rate'])} |",
+                    "",
+                    f"{lt['requests_per_run']} Requests pro Lauf mit {a['rate_per_s']}/s: "
+                    f"{lt['distinct_questions']} verschiedene test_ood-Fragen x {lt['repeat']}, 30 % der "
+                    "Wiederholungen als Groß-/Klein- bzw. Leerzeichen-Varianten "
+                    "(maximal mögliche Trefferquote "
+                    f"{p(lt['max_possible_hit_rate'])}); Gateway -> Executor -> GGUF auf einer GPU.",
+                    "",
+                ]
+            else:
+                lines += [
+                    "| Serving (vegeta, same request stream) | p50 | p95 | cache hit rate |",
+                    "|---|---|---|---|",
+                    f"| without Redis cache | {ms(la['50th'])} | {ms(la['95th'])} | - |",
+                    f"| with Redis cache | {ms(lb['50th'])} | {ms(lb['95th'])} | {p(b['hit_rate'])} |",
+                    "",
+                    f"{lt['requests_per_run']} requests per run at {a['rate_per_s']}/s: "
+                    f"{lt['distinct_questions']} distinct test_ood questions x {lt['repeat']}, 30 % of "
+                    "repeats as case/whitespace variants (max possible hit rate "
+                    f"{p(lt['max_possible_hit_rate'])}); gateway -> executor -> GGUF on one GPU.",
+                    "",
+                ]
     tr = load("train_qlora.json")
     if tr:
+        h = tr["train_seconds"] / 3600
         lines += [
-            f"Training: {tr['train_samples']} samples, {tr['epochs']:.0f} epoch, "
-            f"{tr['train_seconds'] / 3600:.1f} h on an RTX 5060 Ti 16 GB, "
-            f"peak VRAM {tr['peak_vram_allocated_gib']} GiB.",
+            f"Training: {de_num(tr['train_samples'], 0)} Beispiele, {tr['epochs']:.0f} Epoche, "
+            f"{de_num(h)} h auf einer RTX 5060 Ti 16 GB, "
+            f"VRAM-Spitze {de_num(tr['peak_vram_allocated_gib'])} GiB."
+            if de
+            else f"Training: {tr['train_samples']} samples, {tr['epochs']:.0f} epoch, {h:.1f} h on an "
+            f"RTX 5060 Ti 16 GB, peak VRAM {tr['peak_vram_allocated_gib']} GiB.",
             "",
         ]
     bench = load("bench_sqlnorm.json")
     if bench:
+        sp, nq = bench["speedup_vs_sqlglot"]["per_call"], bench["n_queries"]
         lines += [
-            f"Rust `sqlnorm` (parse + canonicalise + hash): **{bench['speedup_vs_sqlglot']['per_call']}x** "
-            f"faster than sqlglot on {bench['n_queries']:,} queries.",
+            f"Rust `sqlnorm` (Parsen + Kanonisieren + Hashen): **{de_num(sp)}-mal** schneller als sqlglot "
+            f"bei {de_num(nq, 0)} Queries."
+            if de
+            else f"Rust `sqlnorm` (parse + canonicalise + hash): **{sp}x** faster than sqlglot "
+            f"on {nq:,} queries.",
             "",
         ]
     ds = load("dataset_build.json")
     if ds:
         n = {s: d["n"] for s, d in ds["splits"].items()}
+        split = (
+            f"{n.get('train')} train / {n.get('val')} val / {n.get('test_in')} test_in / "
+            f"{n.get('test_ood')} test_ood"
+        )
         lines += [
-            f"Dataset: {n.get('train')} train / {n.get('val')} val / {n.get('test_in')} test_in / "
-            f"{n.get('test_ood')} test_ood, all execution-verified.",
+            f"Datensatz: {split}, alle per Ausführung verifiziert."
+            if de
+            else f"Dataset: {split}, all execution-verified.",
             "",
         ]
-    readme = Path("README.md")
-    txt = readme.read_text()
+    return lines
+
+
+def update_readme(evals: dict) -> None:
+    """Headline tables between the results markers of README.md and README.de.md."""
     start, end = "<!-- results:start -->", "<!-- results:end -->"
-    i, j = txt.index(start) + len(start), txt.index(end)
-    readme.write_text(txt[:i] + "\n" + "\n".join(lines) + "\n" + txt[j:])
-    print("updated README.md results section")
+    for path, de in (("README.md", False), ("README.de.md", True)):
+        readme = Path(path)
+        if not readme.exists():
+            continue
+        txt = readme.read_text()
+        i, j = txt.index(start) + len(start), txt.index(end)
+        readme.write_text(txt[:i] + "\n" + "\n".join(readme_lines(evals, de)) + "\n" + txt[j:])
+        print(f"updated {path} results section")
 
 
 if __name__ == "__main__":

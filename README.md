@@ -2,6 +2,8 @@
 
 [![ci](https://github.com/EmilStasevski/sqlforge/actions/workflows/ci.yml/badge.svg)](https://github.com/EmilStasevski/sqlforge/actions/workflows/ci.yml)
 
+[Deutsche Version](README.de.md)
+
 sqlforge fine-tunes a 7B code model (Qwen2.5-Coder-7B-Instruct, 4-bit NF4 QLoRA on one 16 GB GPU) to answer
 German and English questions with DuckDB SQL. **Every training label is checked by running it.** Nothing in
 the dataset was labelled or checked by hand. The model is evaluated by **execution accuracy** on a database
@@ -119,12 +121,3 @@ Grafana: http://localhost:3000 (dashboard "sqlforge serving"). MLflow: `uv run m
 | `k8s/` | kustomize base (gateway, executor, redis) + kind overlay (model server via EndpointSlice) |
 | `docs/env.md` | verified versions and Blackwell / transformers-5 / GGUF export notes |
 | `docs/results.md`, `docs/cv.md` | full results and CV text, both generated from `results/*.json` |
-
-## Kurzfassung (DE)
-
-sqlforge erzeugt Text-to-SQL-Trainingsdaten (Deutsch/Englisch) vollautomatisch: SQL wird aus einer Grammatik
-gesampelt, auf DuckDB ausgeführt und nur behalten, wenn alle automatischen Prüfungen bestehen; Fragen werden aus
-derselben Spezifikation erzeugt und per lokalem LLM paraphrasiert, wobei ein Filter Werte, Fachbegriffe und
-Operatoren absichert. Ein 7B-Modell wird per QLoRA auf einer 16-GB-GPU feinjustiert und nach Ausführungsgenauigkeit
-auf einem ungesehenen Schema (Wetterdaten NRW) bewertet. Serving über Go-Gateway mit Redis-Cache, Kafka-Events nach
-ClickHouse und ein Grafana-Dashboard.

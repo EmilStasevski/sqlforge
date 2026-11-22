@@ -1,0 +1,50 @@
+{
+  "distinct_questions": 120,
+  "repeat": 5,
+  "requests_per_run": 600,
+  "max_possible_hit_rate": 0.8,
+  "runs": {
+    "no_cache": {
+      "requests": 600,
+      "rate_per_s": 2,
+      "success_ratio": 1,
+      "latency_ms": {
+        "50th": 846.6,
+        "90th": 1425.9,
+        "95th": 1762.1,
+        "99th": 4080.4,
+        "max": 5944.3,
+        "mean": 965.5
+      },
+      "status_codes": {
+        "200": 600
+      },
+      "cache_counts": {
+        "disabled": 600
+      },
+      "hit_rate": 0.0
+    },
+    "with_cache": {
+      "requests": 600,
+      "rate_per_s": 2,
+      "success_ratio": 1,
+      "latency_ms": {
+        "50th": 1.9,
+        "90th": 881.2,
+        "95th": 1049.8,
+        "99th": 1579.4,
+        "max": 8761.2,
+        "mean": 219.6
+      },
+      "status_codes": {
+        "200": 600
+      },
+      "cache_counts": {
+        "hit_exact": 296,
+        "hit_normalized": 171,
+        "miss": 133
+      },
+      "hit_rate": 0.778
+    }
+  }
+}

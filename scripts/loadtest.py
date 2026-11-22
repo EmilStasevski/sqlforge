@@ -4,7 +4,7 @@ Stream: N distinct test_ood questions, each sent REPEAT times in a seeded shuffl
 case/whitespace variants (exercise the normalized-question cache). Writes results/loadtest.json.
 
 Requires the compose stack (`make up`) and vegeta on PATH (go install github.com/tsenart/vegeta/v12@v12.12.0).
-Usage: uv run python scripts/loadtest.py [--n 120] [--repeat 5] [--rate 4]
+Usage: uv run python scripts/loadtest.py [--n 120] [--repeat 5] [--rate 2]
 """
 
 from __future__ import annotations
@@ -118,7 +118,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=120)
     ap.add_argument("--repeat", type=int, default=5)
-    ap.add_argument("--rate", type=int, default=4)
+    ap.add_argument("--rate", type=int, default=2)  # below model capacity (warm miss ~0.7-1.2 s)
     args = ap.parse_args()
     SCRATCH.mkdir(parents=True, exist_ok=True)
     targets = build_targets(args.n, args.repeat)
